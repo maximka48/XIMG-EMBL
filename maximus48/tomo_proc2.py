@@ -34,7 +34,7 @@ def tonumpyarray(shared_array, shape, dtype):
         
 
 def correct_shifts(shifts, median_dev = 5):
-    """find any bad numbers which are deviate more than 5 pixels from the median
+    """find any bad numbers which deviate more than 5 pixels from the median
     and correct them to median of the array"""
     
     shifts = tonumpyarray(shifts.shared_array_base, shifts.shape, shifts.dtype)

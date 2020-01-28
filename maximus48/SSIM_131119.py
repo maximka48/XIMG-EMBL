@@ -117,7 +117,11 @@ class SSIM(object):
                 C2=0
                 
                 #calculate sigmaxy first
-                k = self.data.delta * self.ff.delta[:,:,i]
+                try:
+                    k = self.data.delta * self.ff.delta[:,:,i]
+                except ValueError:
+                    print('\n####WARNING: The dimensions of the ff-data is wrong. Please make sure that images are stacked along the LAST dimension of the 3D array\n')
+                    raise
                 k1 = np.sum(k)
                 sxy = k1/(k.shape[0]*k.shape[1]-1)
                 
