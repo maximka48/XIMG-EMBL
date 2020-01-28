@@ -6,4 +6,4 @@ There is no published manual yet so please contact me (Maxim Polikarpov, polikar
 
 Please check the folder
 examples_light/
-to check for 
+to check for examples
