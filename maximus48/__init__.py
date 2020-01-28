@@ -12,9 +12,9 @@
 
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
-from maximus48.SSIM import *
-from maximus48.SSIM_sf2 import divide
-from maximus48.SSIM_sf import *
+#from maximus48.SSIM import *
+#from maximus48.SSIM_sf2 import divide
+#from maximus48.SSIM_sf import *
 
 from maximus48.var import *
 from maximus48.polar import *
