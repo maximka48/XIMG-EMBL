@@ -1,7 +1,12 @@
 # XIMG-EMBL project
-This is the part of the project on Research and Development of X-ray tomography at the P14 EMBL beamline at PETRA-III, DESY
 
-This package is dedicated to image processing, flatifield correction, phase retrieval and parallel-beam X-ray tomography.
-There is no published manual yet so please contact me (Maxim Polikarpov, polikarpov.maxim@mail.ru) in case you would like to use this package and get some guidance. In addition, each function or class have a situational description.
+This package is the part of the project on Research and Development of X-ray tomography at the P14 EMBL beamline at PETRA-III (DESY). This package is dedicated to:
+- [Flatfield-correction](https://github.com/maximka48/XIMG-EMBL/blob/master/demo_SSIM_1d-PR.ipynb)
+- [Single-distance Phase retrieval (Paganin, Bronniokv, CTF algorithms](https://github.com/maximka48/XIMG-EMBL/blob/master/demo_SSIM_1d-PR.ipynb)
+- Phase retrieval with multi-distance CTF-based approach
+- Parallel-beam X-ray tomography
 
-Please check Jupyter notebooks above for examples.
+I try to update the examples timely so the user could get an idea of usage. However, you may also find useful to check each function or class have a situational description.
+Feel free to contact me should you have any questions [Maxim Polikarpov](polikarpov.maxim@mail.ru)
+
+
