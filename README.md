@@ -2,7 +2,7 @@
 
 This package is the part of the project on Research and Development of X-ray tomography at the P14 EMBL beamline at PETRA-III (DESY). This package is dedicated to:
 - [Flatfield-correction](https://github.com/maximka48/XIMG-EMBL/blob/master/demo_SSIM_1d-PR.ipynb)
-- [Single-distance Phase retrieval (Paganin, Bronniokv, CTF algorithms](https://github.com/maximka48/XIMG-EMBL/blob/master/demo_SSIM_1d-PR.ipynb)
+- [Single-distance Phase retrieval (Paganin, Bronniokv, CTF algorithms)](https://github.com/maximka48/XIMG-EMBL/blob/master/demo_SSIM_1d-PR.ipynb)
 - Phase retrieval with multi-distance CTF-based approach
 - Parallel-beam X-ray tomography
 
