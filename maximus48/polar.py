@@ -36,6 +36,7 @@ class polar_image:
     def plot_polar_image(self, data, origin=None):
         """Plots an image reprojected into polar coordinages with the origin
         at "origin" (a tuple of (x0, y0), defaults to the center of the image)"""
+        
         polar_grid, r, theta = self.reproject_image_into_polar(data, origin)
         plt.figure()
         plt.imshow(polar_grid, extent=(theta.min(), theta.max(), r.max(), r.min()))
@@ -50,6 +51,7 @@ class polar_image:
         """Creates x & y coords for the indicies in a numpy array "data".
         "origin" defaults to the center of the image. Specify origin=(0,0)
         to set the origin to the lower left corner of the image."""
+        
         ny, nx = data.shape[:2]
         if origin is None:
             origin_x, origin_y = nx // 2, ny // 2
