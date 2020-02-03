@@ -3,9 +3,8 @@
 This package is the part of the project on Research and Development of phase-contrast X-ray tomography at the P14 EMBL beamline at PETRA-III (DESY). It can do:
 
 - [Flatfield-correction for unstable illumination conditions (monochromator vibrations)](https://github.com/maximka48/XIMG-EMBL/blob/master/examples_public/demo_SSIM_1d-PR.ipynb)
-- [Parallel-based (multiprocessing) image filtering](https://github.com/maximka48/XIMG-EMBL/blob/master/examples_public/demo_SSIM_1d-PR.ipynb)
+- [Parallel-based image filtering with multiprocessing](https://github.com/maximka48/XIMG-EMBL/blob/master/examples_public/demo_SSIM_1d-PR.ipynb)
 - [Single-distance Phase retrieval (Paganin, Bronnikov, CTF algorithms)](https://github.com/maximka48/XIMG-EMBL/blob/master/examples_public/demo_SSIM_1d-PR.ipynb)
-- Parallel-based (multiprocessing) image filtering
 - Phase retrieval with multi-distance CTF-based approach
 - Parallel-beam X-ray tomography
 
