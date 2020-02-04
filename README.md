@@ -1,3 +1,5 @@
+<meta name="google-site-verification" content="rnnwgvWL65WRkF2NxC8H0l-YSArRZGXA1qfp9e8Ox_8" />
+
 # XIMG-EMBL project
 This is the part of the project on Research and Development of X-ray tomography at the P14 EMBL beamline at PETRA-III, DESY
 
