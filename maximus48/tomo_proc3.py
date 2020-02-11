@@ -186,25 +186,19 @@ def init_Npad(ROI, compression = 8):
     return Npad 
 
 
-def init_names(data_name, N_distances, first_distance):
-    
-    """set proper data_names"""
-    print("WARNING: functions init_names and init_paths are deprecated")
+
+def init_names_custom(data_name, distance_indexes):
+    """set proper data_names when you manually define indexes for distances"""
     
     data_names = []
     ff_names = []
     
-    if type(first_distance) == str:
-        first_distance = int(first_distance)
-    
-    for i in range(first_distance, N_distances + first_distance):
+    for i in distance_indexes:
         data_names.append(data_name + '_' + str(i))
         ff_names.append('ff_' + data_name + '_' + str(i))
-        
+    
     return data_names, ff_names 
-
-
-
+    
 
 
 
@@ -219,6 +213,8 @@ class Processor:
     def __init__(self, ROI, folder, N_start, N_finish, compNpad = 8):
         """Initialize parameters. 
         Normally should contain ROI, N_distances, etc
+        N_distances = tuple
+            corresponds to the indexes of the distances
         """
         self.N_start = N_start
         self.ROI = ROI
@@ -227,16 +223,18 @@ class Processor:
         self.Npad = init_Npad(ROI, compression = compNpad)
         
         
-    def init_paths(self, data_name, path, N_distances, first_distance = 1):
+    def init_paths(self, data_name, path, distance_indexes):
         """Generate paths images & flatfields"""
     
         #set data_names
-        data_names, ff_names = init_names(data_name, N_distances, first_distance = first_distance)
+        data_names, ff_names = init_names_custom(data_name = data_name,
+                                                 distance_indexes = distance_indexes)
         
         #find images
         imlist = var.im_folder(path)
         
         #set proper paths
+        N_distances = len(distance_indexes) 
         images = np.zeros(N_distances, 'object') 
         flats = np.zeros(N_distances, 'object')
                 
