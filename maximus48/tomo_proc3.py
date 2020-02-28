@@ -11,19 +11,21 @@ os.environ['OPENBLAS_NUM_THREADS'] = '1'
 os.environ['MKL_NUM_THREADS'] = '1'
 
 from maximus48 import var
+import tomopy
 import numpy as np
 from multiprocessing import Array
 from maximus48.multiCTF2 import shift_distance as shift
+from skimage.transform import rescale
+from numpy.fft import fft2, fftshift
+
  
 """
-some functions here are out of classes - if you compare to the file tomo_proc.py
-the reason for that - I wanted to make clases F and Processor as light as possible
- for parallel processing 
+I wanted to make clases F and Processor as light as possible for parallel processing 
 so, in a sence, I use them almost as fast dictionaries
 """
 
 # =============================================================================
-# tomo-functions
+# additional functions
 # =============================================================================
 
 def tonumpyarray(shared_array, shape, dtype):
@@ -45,8 +47,23 @@ def correct_shifts(shifts, median_dev = 5):
     print('adjusted shifts') 
 
 
-def rotaxis(proj, N_steps):
+def fit_polynom(x, y, poly_deg):
+    '''fits the y(x) with a cubic function. 
+    Returns the y-coordinate of the fit'''
+
+    pfit = np.polyfit(x,y, poly_deg)
+    return np.polyval(pfit, x)
+
+
+
+# =============================================================================
+# # Set of functions for identification of the rotation axis
+# =============================================================================
+def rotaxis_rough(proj, N_steps = 10):
     """calculate the rotation axis comparing 0 and 180 projection shift
+    
+    Parameters
+    __________
     proj: 3D array
     N_steps: projections per degree
     by default it compares the central part of images (between 1/4 and 3/4 of shape)
@@ -67,8 +84,109 @@ def rotaxis(proj, N_steps):
     return cent
     
 
+def rotaxis_precise(projections, rotaxis_scan_interval, rot_step = 10, downscale = 0.25):
+    """
+    This function calculates tomo-reconstructions and tells you 
+    which tomo-slice is the sharpest one
+    it works like auto-focus in a smartphone
+    
+    Check this post for the idea (I use FFT)
+    https://www.pyimagesearch.com/2015/09/07/blur-detection-with-opencv/
+   
+    Parameters
+    __________
+    projections: 3D array
+        0 direction is different images
+    rotaxis_scan_interval: array
+        range of integers for potential rotation axis values
+    rot_step: int
+        number of radiographic projections per 1 degree (typically 1 or 10)
+    downscale: int
+        number<1, corresponds to the downscale factor of the image
+            for resolution estimation
+    elements: 2D array
+        0dim: rotaxis coordinate for the most sharpest image
+        1dim: standard deviation (contrast) of the tomo-image at this rotaxis
+                higher std means better sharpness
+    """
+            
+    # calculate angles
+    n = projections.shape[0]
+    angle = np.pi*np.arange(n)/(rot_step*180)
+     
+    # counter for best std
+    elements = []
+    # 0 direction to store rotaxis
+    elements.append([])
+    # 1 direction to store contrast values
+    elements.append([])    
+    
+    # body
+    for i in rotaxis_scan_interval:
+        image = tomopy.recon(projections, angle, center = i, 
+                             algorithm = 'gridrec', filter_name = 'shepp')[0]
+        
+        image = rescale(image, downscale, anti_aliasing=True, multichannel = False)
+        image = np.std(np.log(abs(fftshift(fft2(image)))))
+        elements[1].append(image)
+        elements[0].append(i)
+        
+    return np.asarray(elements)
+
+
+
+def rotaxis_scan(projections, rot_step = 10):
+    """
+    The function combines rotaxis_rough() and rotaxis_precise()
+    It does three iterations to find the best match for the rotation axis
+   
+    Parameters
+    __________
+    projections: 3D array
+        0 direction is different images. 
+        Please note that 1st direction should have 2 or more values. 
+        If it has >2 values, only the first slice will be considered 
+            for resolution measurements
+    rot_step: int
+        number of radiographic projections per 1 degree (typically 1 or 10)
+    cent: int
+        center of rotation
+    """
+    
+    # rough alignment
+    cent = rotaxis_rough(projections, rot_step)
+    cent = np.median(cent)
+
+    # first iteration
+    opa = rotaxis_precise(projections, np.arange(cent - 100, cent + 100, 5), rot_step)
+    cent = opa[0, np.argmax(opa[1])]
+
+    # second iteration
+    opa = rotaxis_precise(projections, np.arange(cent - 5, cent + 5, 1), rot_step)
+    cent = opa[0, np.argmax(opa[1])]
+    
+    # third iteration
+    opa = rotaxis_precise(projections, np.arange(cent - 2, cent + 2, 0.1), rot_step)
+    cent = opa[0, np.argmax(opa[1])]
+    
+    #final fit
+    fit = fit_polynom(opa[0], opa[1], poly_deg = 3)
+    cent = opa[0, np.argmax(fit)]
+    
+    return cent
+
+
+# =============================================================================
+# # Additional custom functions for rotaxis 
+# =============================================================================
 def axis_raws(image1, image2, Npad = 0, RotROI = None, level = 5, window = 50):
     """Finds an axis of rotation by comparing the 1st and the 180deg image:
+    This function is based on rotaxis_rough()
+    It is useful when you want to search for rotaxis in different regions of 
+        your image independently
+        
+    Parameters
+    __________
     image1: 2D array 
         first 2D image
     image2: 2D array
@@ -128,8 +246,11 @@ def axis_raws(image1, image2, Npad = 0, RotROI = None, level = 5, window = 50):
 
 def interpolate(cent, level = None):
     """interpolates the coordinates for the rotation axis with the line
-     basically finds the inclination of the rotation axis through the image
-   
+     basically finds the inclination of the rotation axis through the image.
+     The input for this function typically comes from axis_raws() 
+    
+    Parameters
+    __________   
     cent: 2D array 
         comes from axis_raws    
     level:int 
@@ -164,13 +285,11 @@ def interpolate(cent, level = None):
 
 
 
-
-
-
-
 # =============================================================================
-# #actually should be a part of the Processor class - check tomo_proc.py
+# Process classesm and functions to define ans store tomo-parameters 
 # =============================================================================
+
+#actually should be a part of the Processor class - check tomo_proc.py
 
 def init_Npad(ROI, compression = 8):
     """Calculate the Npad for padding
@@ -202,10 +321,8 @@ def init_names_custom(data_name, distance_indexes):
 
 
 
-
-# =============================================================================
 # classes themselves
-# =============================================================================
+
 class Processor:
     __slots__ = ['ROI', 'ROI_ff', 'Npad', 'im_shape', 'images', 'flats',
                  'N_files', 'N_start']

@@ -14,6 +14,7 @@ This package is the part of the project on Research and Development of phase-con
 - [Various functions for image processing](https://github.com/maximka48/XIMG-EMBL/blob/master/maximus48/var.py)
 - [Transformation of the image from Cartesian to Polar coordinates](https://github.com/maximka48/XIMG-EMBL/blob/master/examples_public/Cartesian-2-Polar.ipynb)
 - [State of the art (2019) denoising filtering techniques](https://github.com/maximka48/XIMG-EMBL/blob/master/examples_public/Denoise_filters.ipynb)
+- Auto-focus to find the rotation axis in tomography
 
 
 
