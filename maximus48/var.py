@@ -15,6 +15,8 @@ import numpy as np
 from numpy import mean, square, sqrt
 from numpy.fft import fft2, fftshift
 from joblib import Parallel, delayed
+import skimage
+import scipy
 
 
 
@@ -368,9 +370,29 @@ def maximal_intensity(image, angle = None):
 
 
 
+def filt_gauss_laplace(image, sigma = 3):
+    """
+    Consistently applies Gaussian + Laplace (edge) filters to the image
+    You need to specify the kernel of the Gaussian filter (sigma)
+    Normally, sigma = 3 is good enough to remove white noise.
+    """
+    image =  skimage.filters.gaussian(image, sigma)
+    return scipy.ndimage.laplace(image)
 
 
+def shift_distance(image1, image2, accuracy = 100):
+    """
+    Finds lateral shift between two images 
+    
+    Parameters
+    __________
+    image1 : 2D array
 
-
-
+    image2 : 2D array
+        y axis
+    accuracy: int
+        Upsampling factor. Images will be registered within 1 / upsample_factor of a pixel. For example upsample_factor == 20 means the images will be registered within 1/20th of a pixel.    
+    """
+    shift, error, diffphase = skimage.feature.register_translation(image1, image2, accuracy)
+    return shift
 

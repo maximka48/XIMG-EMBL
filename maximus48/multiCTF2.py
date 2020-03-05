@@ -34,7 +34,7 @@ def shift_distance(image1, image2, accuracy = 100):
         Upsampling factor. Images will be registered within 1 / upsample_factor of a pixel. For example upsample_factor == 20 means the images will be registered within 1/20th of a pixel.    
     """
     
-    shift, error, diffphase = register_translation(image1, image2, 100)
+    shift, error, diffphase = register_translation(image1, image2, accuracy)
     
     return shift
 
