@@ -14,7 +14,8 @@ from maximus48 import var
 import tomopy
 import numpy as np
 from multiprocessing import Array
-from maximus48.multiCTF2 import shift_distance as shift
+from maximus48.var import shift_distance as shift
+from maximus48.var import filt_gauss_laplace
 from skimage.transform import rescale
 from numpy.fft import fft2, fftshift
 
@@ -82,6 +83,32 @@ def rotaxis_rough(proj, N_steps = 10):
         cent.append(proj[i].shape[1]/2 + distances[1]/2)
     
     return cent
+
+
+def rotaxis_rough_filt(proj, N_steps = 10, sigma = 5, accuracy = 10):
+    """calculate the rotation axis comparing 0 and 180 projection shift
+    
+    Parameters
+    __________
+    proj: 3D array
+    N_steps: projections per degree
+    by default it compares the central part of images (between 1/4 and 3/4 of shape)
+    """
+    a = proj.shape[1]//4
+    b = 3 * proj.shape[1]//4
+    c = proj.shape[2]//4
+    d = 3 * proj.shape[2]//4
+        
+    cent = []
+    N_rot = proj.shape[0] - 180 * N_steps
+    
+    for i in range(N_rot):
+        im1 = filt_gauss_laplace(proj[i, a:b, c:d], sigma)
+        im2 = np.flip(filt_gauss_laplace(proj[i + N_steps*180, a:b, c:d], sigma),1)
+        distances = shift(im1, im2 , accuracy)
+        cent.append(proj[i].shape[1]/2 + distances[1]/2)
+    return cent
+
     
 
 def rotaxis_precise(projections, rotaxis_scan_interval, rot_step = 10, downscale = 0.25):
@@ -135,7 +162,7 @@ def rotaxis_precise(projections, rotaxis_scan_interval, rot_step = 10, downscale
 
 
 
-def rotaxis_scan(projections, rot_step = 10):
+def rotaxis_scan(projections, N_slice = 1000, rot_step = 10):
     """
     The function combines rotaxis_rough() and rotaxis_precise()
     It does three iterations to find the best match for the rotation axis
@@ -158,15 +185,18 @@ def rotaxis_scan(projections, rot_step = 10):
     cent = np.median(cent)
 
     # first iteration
-    opa = rotaxis_precise(projections, np.arange(cent - 100, cent + 100, 5), rot_step)
+    opa = rotaxis_precise(projections[:,N_slice:N_slice+1], 
+                          np.arange(cent - 100, cent + 100, 5), rot_step)
     cent = opa[0, np.argmax(opa[1])]
 
     # second iteration
-    opa = rotaxis_precise(projections, np.arange(cent - 5, cent + 5, 1), rot_step)
+    opa = rotaxis_precise(projections[:,N_slice:N_slice+1],
+                          np.arange(cent - 5, cent + 5, 1), rot_step)
     cent = opa[0, np.argmax(opa[1])]
     
     # third iteration
-    opa = rotaxis_precise(projections, np.arange(cent - 2, cent + 2, 0.1), rot_step)
+    opa = rotaxis_precise(projections[:,N_slice:N_slice+1],
+                          np.arange(cent - 2, cent + 2, 0.1), rot_step)
     cent = opa[0, np.argmax(opa[1])]
     
     #final fit
