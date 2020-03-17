@@ -392,6 +392,13 @@ def shift_distance(image1, image2, accuracy = 100):
         y axis
     accuracy: int
         Upsampling factor. Images will be registered within 1 / upsample_factor of a pixel. For example upsample_factor == 20 means the images will be registered within 1/20th of a pixel.    
+    
+    Returns 
+    __________
+    
+    shifts: ndarray
+        Shift vector (in pixels) required to register target_image with src_image. 
+        Axis ordering is consistent with numpy (e.g. Z, Y, X)
     """
     shift, error, diffphase = skimage.feature.register_translation(image1, image2, accuracy)
     return shift

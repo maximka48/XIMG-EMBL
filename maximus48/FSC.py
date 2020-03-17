@@ -97,6 +97,7 @@ def FSC(im1, im2, beta = 7):
     n_xi = n_xi[:int(ceil((min(N)+1)/2))]
     
     # frequencies
+    num_xi = size(n_xi)
     delta_nu = 1/(2*num_xi)
     nu = delta_nu * np.arange(num_xi)
     
