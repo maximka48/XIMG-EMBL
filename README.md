@@ -13,9 +13,10 @@ This package is the part of the project on Research and Development of phase-con
 
 - [Various functions for image processing](https://github.com/maximka48/XIMG-EMBL/blob/master/maximus48/var.py)
 - [Transformation of the image from Cartesian to Polar coordinates](https://github.com/maximka48/XIMG-EMBL/blob/master/examples_public/Cartesian-2-Polar.ipynb)
-- [State of the art (2019) denoising filtering techniques](https://github.com/maximka48/XIMG-EMBL/blob/master/examples_public/Denoise_filters.ipynb)
-- [How to use cross-correlation to find shifts between two images](https://github.com/maximka48/XIMG-EMBL/blob/master/examples_public/Find_shifts_cross-correlation_properly.ipynb)
-- [Auto-focus to find the rotation axis in tomography](https://github.com/maximka48/XIMG-EMBL/blob/master/examples_public/Auto-focus%20for%20tomo-rotaxis.ipynb)
+- [Denoising filtering techniques](https://github.com/maximka48/XIMG-EMBL/blob/master/examples_public/Denoise_filters.ipynb)- State of the art (2019).
+- [Cross-correlation to find shifts between two images](https://github.com/maximka48/XIMG-EMBL/blob/master/examples_public/Find_shifts_cross-correlation_properly.ipynb)
+- [Auto-focus](https://github.com/maximka48/XIMG-EMBL/blob/master/examples_public/Auto-focus%20for%20tomo-rotaxis.ipynb)- to find the rotation axis in tomography.
+- [Fourier Shell Correlation](https://github.com/maximka48/XIMG-EMBL/blob/master/examples_public/FSC_example.ipynb) - measure the resolution of your 2D/3D dataset.
 
 
 
