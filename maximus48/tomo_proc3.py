@@ -111,7 +111,7 @@ def rotaxis_rough_filt(proj, N_steps = 10, sigma = 5, accuracy = 10):
 
     
 
-def rotaxis_precise(projections, rotaxis_scan_interval, rot_step = 10, downscale = 0.25):
+def rotaxis_precise(projections, rotaxis_scan_interval, rot_step = 10, crop_ratio = 2, downscale = 0.25):
     """
     This function calculates tomo-reconstructions and tells you 
     which tomo-slice is the sharpest one
@@ -128,6 +128,9 @@ def rotaxis_precise(projections, rotaxis_scan_interval, rot_step = 10, downscale
         range of integers for potential rotation axis values
     rot_step: int
         number of radiographic projections per 1 degree (typically 1 or 10)
+    crop_ratio: int
+        which portion of the original image will be considered by this function
+        Example: if 2, then the new ROI will be from 1/4 to 3/4 of the original ROI
     downscale: int
         number<1, corresponds to the downscale factor of the image
             for resolution estimation
@@ -150,10 +153,20 @@ def rotaxis_precise(projections, rotaxis_scan_interval, rot_step = 10, downscale
     
     # body
     for i in rotaxis_scan_interval:
+      
+        # make the reconsturction
         image = tomopy.recon(projections, angle, center = i, 
                              algorithm = 'gridrec', filter_name = 'shepp')[0]
         
-        image = rescale(image, downscale, anti_aliasing=True, multichannel = False)
+        # crop squared tomo-reconstructio so you use only the ROI with a sample.
+        a = int(image.shape[0] * (crop_ratio-1)/(2*crop_ratio))
+        b = int(image.shape[0] * (crop_ratio+1)/(2*crop_ratio))
+        
+        # downscale the image
+        image = rescale(image[a:b, a:b],
+                        downscale, anti_aliasing=True, multichannel = False)
+        
+        # calculate standard deviation and save results
         image = np.std(np.log(abs(fftshift(fft2(image)))))
         elements[1].append(image)
         elements[0].append(i)
@@ -179,6 +192,7 @@ def rotaxis_scan(projections, N_slice = 1000, rot_step = 10):
     cent: int
         center of rotation
     """
+    print('WARNING! This function will be deprecated')
     
     # rough alignment
     cent = rotaxis_rough(projections, rot_step)

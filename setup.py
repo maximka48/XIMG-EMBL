@@ -14,7 +14,7 @@ MIT License, Copyright (c) 2019 Maxim Polikarpov
 
 setup(
     name='maximus48',
-    version='1.1.8',
+    version='1.1.9',
     description='Useful tools for image processing & parallel-beam X-ray tomography',
     keywords=['tomography', 'reconstruction', 'imaging'],
     long_description=long_description,
