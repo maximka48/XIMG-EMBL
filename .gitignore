@@ -1,0 +1,11 @@
+#compiled python modules
+*.pyc
+
+#setuptools distribution folder
+/dist/
+
+# Python egg metadata, regenerated from source files by setuptools
+.*
+!/.gitignore
+examples
+/*.egg-info
