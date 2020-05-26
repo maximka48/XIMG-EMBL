@@ -6,6 +6,7 @@ Created on Thu Nov 21 16:23:15 2019
 @author: mpolikarpov
 """
 import os
+import sys
 os.environ['OMP_NUM_THREADS'] ='1'
 os.environ['OPENBLAS_NUM_THREADS'] = '1'
 os.environ['MKL_NUM_THREADS'] = '1'
@@ -394,15 +395,39 @@ class Processor:
         #find images
         imlist = var.im_folder(path)
         
+        # create a filter for unnecessary images
+        tail = '_00000.tiff'
+        
+        if len(data_names[0])!=len(data_names[-1]):
+            print("""
+            WARNING! Different distances in your dataset 
+            have different naming lengths. 
+            File names can't be arranged. 
+            Try to reduce the number of distances (<10) or modify the script.
+            """)
+            sys.exit()
+        else:
+            data_lencheck = len(data_names[0]+tail)
+            ff_lencheck = len(ff_names[0]+tail)
+        
+
+        
         #set proper paths
         N_distances = len(distance_indexes) 
         images = np.zeros(N_distances, 'object') 
         flats = np.zeros(N_distances, 'object')
                 
         for i in np.arange(len(images)):
+            
             #sort image paths
-            images[i] = [path+im for im in imlist if (im.startswith(data_names[i])) and not (im.startswith('.'))]
-            flats[i] = [path+im for im in imlist if im.startswith(ff_names[i])]
+            images[i] = [path+im for im in imlist 
+                         if (im.startswith(data_names[i])) 
+                         and not (im.startswith('.'))
+                         and (len(im) == data_lencheck)]
+            
+            flats[i] = [path+im for im in imlist 
+                        if im.startswith(ff_names[i])
+                        and (len(im)==ff_lencheck)]
             
         self.images = images
         self.flats = flats
