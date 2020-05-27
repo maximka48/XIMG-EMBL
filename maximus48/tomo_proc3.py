@@ -221,6 +221,62 @@ def rotaxis_scan(projections, N_slice = 1000, rot_step = 10):
     return cent
 
 
+def rotscan(proj, N_steps, slice_mode = False):
+    """
+    The function combines rotaxis_rough() and rotaxis_precise()
+    It does three iterations to find the best match for the rotation axis
+    It also finds the inclination of the rotation axis
+   
+    Parameters
+    __________
+    projections: 3D array
+        0 direction is different images. 
+        (1,2) direction - projection views
+    N_steps: int
+        number of radiographic projections per 1 degree (typically 1 or 10)
+    slice_mode: boolean
+        if True, the rotation axis will be calculated 
+        individually for each row of the projection
+    cent: int
+        center of rotation
+    """
+    
+    ### rough rotaxis scan
+    cent = rotaxis_rough(proj, N_steps)
+    cent = np.median(cent)
+
+    ### fine rotaxis scan (optional, only if 360 deg projections)
+    # Note: you schould use only the region with a sample. 
+    #The noisy region with no data will introduce errors
+    list_to_scan = (proj.shape[1]//8, proj.shape[1]//4, proj.shape[1]//2,
+                  3*proj.shape[1]//4, 7*proj.shape[1]//8)
+    rotslice = []
+
+    for i, sliceN in enumerate(list_to_scan):
+        cent_iter = cent
+        for scan_step in (10,2):
+            calc = rotaxis_precise(proj[:,sliceN:sliceN+1],
+                               np.arange(cent_iter - scan_step, cent_iter + scan_step, scan_step/10), 
+                               N_steps)
+            cent_iter = calc[0, np.argmax(calc[1])]
+        rotslice.append(cent_iter)
+   
+    # calculate tilt of the rotation axis
+    # counter-clockwise rotation of the rotaxis => positive angles
+    pfit = np.polyfit(list_to_scan, rotslice, 1)
+    inclination = (-np.arctan(pfit[0]*180/np.pi))
+    
+    if slice_mode:
+        # build new coordination axis
+        Ycoord = np.arange(proj.shape[1])
+        cent = np.polyval(pfit, Ycoord)
+    else:
+        cent = np.median(rotslice)
+    
+    return (cent, inclination)
+
+
+
 # =============================================================================
 # # Additional custom functions for rotaxis 
 # =============================================================================
