@@ -129,7 +129,6 @@ class SSIM(object):
                 nominator = (2 * self.data.mu * self.ff.mu[i] + C1) * (2 * sxy + C2)
                 denominator1 = (square(self.data.mu) + square(self.ff.mu[i]) + C1) 
                 denominator2 = (square(self.data.sigma) + square(self.ff.sigma[i]) + C2)
-                
                 out[i] = nominator / (denominator1 * denominator2)    
         
         return out
